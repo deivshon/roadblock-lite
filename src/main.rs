@@ -4,6 +4,8 @@ pub mod utils;
 use std::path::Path;
 
 use clap::Parser;
+use config::core::get_config;
+use utils::failure;
 
 #[derive(Parser)]
 #[command(about, long_about = None)]
@@ -25,5 +27,13 @@ fn main() {
         }
     };
 
-    println!("{:?}", config_path)
+    let config = match get_config(&config_path) {
+        Ok(c) => c,
+        Err(e) => failure(&format!(
+            "could not parse config at `{:?}`: {}",
+            &config_path, e
+        )),
+    };
+
+    println!("{:?}", config)
 }

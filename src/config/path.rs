@@ -5,7 +5,7 @@ use std::{
 };
 
 const CONIFG_DIR_NAME: &'static str = "roadblock-lite";
-const CONFIG_FILE_NAME: &'static str = "config.toml";
+const CONFIG_FILE_NAME: &'static str = "config.json";
 
 pub fn default_config() -> Result<PathBuf> {
     let home_env = env::var("HOME")?;
