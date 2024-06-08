@@ -20,7 +20,7 @@ struct Args {
 
 fn main() {
     let args = Args::parse();
-    let config_path = if args.config_path.len() > 0 {
+    let config_path = if !args.config_path.is_empty() {
         Path::new(&args.config_path).to_path_buf()
     } else {
         match config::path::default_config() {
@@ -39,9 +39,8 @@ fn main() {
 
     let check_result = check_on_config(args.target, config);
     for rule_result in check_result {
-        let rule_matches;
-        match rule_result.matches {
-            Ok(m) => rule_matches = m,
+        let rule_matches = match rule_result.matches {
+            Ok(m) => m,
             Err(e) => {
                 warning(&format!(
                     "rule {} could not be evaluated: {}",
@@ -49,7 +48,7 @@ fn main() {
                 ));
                 continue;
             }
-        }
+        };
 
         if rule_matches {
             failure(&format!("rule {} matches", rule_result.rule.name))

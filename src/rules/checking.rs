@@ -12,7 +12,7 @@ pub fn check_on_config(target: String, config: Config) -> Vec<RuleCheck> {
     results
 }
 
-fn check_single_rule(target: &String, rule: Rule) -> RuleCheck {
+fn check_single_rule(target: &str, rule: Rule) -> RuleCheck {
     let regex = match Regex::new(&rule.regex) {
         Ok(r) => r,
         Err(e) => {
@@ -23,8 +23,8 @@ fn check_single_rule(target: &String, rule: Rule) -> RuleCheck {
         }
     };
 
-    return RuleCheck {
-        matches: Ok(regex.is_match(&target)),
+    RuleCheck {
+        matches: Ok(regex.is_match(target)),
         rule,
-    };
+    }
 }
