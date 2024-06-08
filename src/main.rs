@@ -1,11 +1,13 @@
 pub mod config;
+pub mod rules;
 pub mod utils;
 
 use std::path::Path;
 
 use clap::Parser;
 use config::core::get_config;
-use utils::failure;
+use rules::checking::check_on_config;
+use utils::{failure, warning};
 
 #[derive(Parser)]
 #[command(about, long_about = None)]
@@ -23,7 +25,7 @@ fn main() {
     } else {
         match config::path::default_config() {
             Ok(p) => p,
-            Err(e) => utils::failure(&format!("could not get default config path: {}", e)),
+            Err(e) => failure(&format!("could not get default config path: {}", e)),
         }
     };
 
@@ -35,5 +37,22 @@ fn main() {
         )),
     };
 
-    println!("{:?}", config)
+    let check_result = check_on_config(args.target, config);
+    for rule_result in check_result {
+        let rule_matches;
+        match rule_result.matches {
+            Ok(m) => rule_matches = m,
+            Err(e) => {
+                warning(&format!(
+                    "rule {} could not be evaluated: {}",
+                    rule_result.rule.name, e
+                ));
+                continue;
+            }
+        }
+
+        if rule_matches {
+            failure(&format!("rule {} matches", rule_result.rule.name))
+        }
+    }
 }
